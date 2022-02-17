@@ -1,5 +1,4 @@
 #include "ADC.hpp"  // ADC functions, iostream, wiringPi.h, wiringPiI2C.h, bitset, colorfullcpp
-#include <math.h>
 
 int main (void)
 {
