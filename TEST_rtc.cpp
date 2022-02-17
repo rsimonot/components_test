@@ -14,30 +14,30 @@ int main (void)
     wiringPiI2CWrite(fd, year_reg);
     int Y = wiringPiI2CRead(fd);
     if (Y < 0) {
-        std::cout << R_B << "ERR : Unable to read from ADC Device" << N << std::endl;
+        std::cout << R_B << "ERR : Unable to read from RTC Device" << N << std::endl;
         return EXIT_FAILURE;
     }
-    std::cout << G << "  [+] Successfully read Year from ADC Device !" << N << std::endl;
+    std::cout << G << "  [+] Successfully read Year from RTC Device !" << N << std::endl;
 
     wiringPiI2CWrite(fd, month_reg);
     int M = wiringPiI2CRead(fd);
-    std::cout << G << "  [+] Successfully read Month from ADC Device !" << N << std::endl;
+    std::cout << G << "  [+] Successfully read Month from RTC Device !" << N << std::endl;
 
     wiringPiI2CWrite(fd, days_reg);
     int D = wiringPiI2CRead(fd);
-    std::cout << G << "  [+] Successfully read Day from ADC Device !" << N << std::endl;
+    std::cout << G << "  [+] Successfully read Day from RTC Device !" << N << std::endl;
 
     wiringPiI2CWrite(fd, hours_reg);
     int HRS = wiringPiI2CRead(fd);
-    std::cout << G << "  [+] Successfully read Hours from ADC Device !" << N << std::endl;
+    std::cout << G << "  [+] Successfully read Hours from RTC Device !" << N << std::endl;
 
     wiringPiI2CWrite(fd, min_reg);
     int MIN = wiringPiI2CRead(fd);
-    std::cout << G << "  [+] Successfully read Minutes from ADC Device !" << N << std::endl;
+    std::cout << G << "  [+] Successfully read Minutes from RTC Device !" << N << std::endl;
 
     wiringPiI2CWrite(fd, sec_reg);
     int SEC = wiringPiI2CRead(fd);
-    std::cout << G << "  [+] Successfully read Seconds from ADC Device !" << N << std::endl;
+    std::cout << G << "  [+] Successfully read Seconds from RTC Device !" << N << std::endl;
 
     std::cout << P_B << "Current time according to RTC =>  " << P
         << D << "/" << M << "/" << Y << "  -  "
