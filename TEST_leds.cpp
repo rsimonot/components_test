@@ -10,7 +10,7 @@ int enableLEDs(int fd)
     int i = 0;
     for (int reg : registers) {
         std::cout << P << "Enabling LED #" << ++i << "  Reg value = " << reg << N << std::endl;
-        if (wiringPiI2CWriteReg8(fd, reg, 0xff) < 0) {
+        if (wiringPiI2CWriteReg8(fd, reg, 0xb4) < 0) {      // 180/255
             std::cout << R << "  [-] Problem for LED #" << i << N << std::endl;
             return -1;
         }
@@ -24,23 +24,17 @@ int GRPPWM_leds(int fd, int GRPPWM_addr)
     std::cout << P << "Brightness MAX" << N << std::endl;
     if (wiringPiI2CWriteReg8(fd, GRPPWM_addr, 0xff))    // 255/255
         return -1;
-    digitalWrite(OEpin, LOW);
     delay(1500);
-    digitalWrite(OEpin, HIGH);
 
     std::cout << P << "Brightness MED" << N << std::endl;
     if (wiringPiI2CWriteReg8(fd, GRPPWM_addr, 0x64))    // 100/255
         return -2;
-    digitalWrite(OEpin, LOW);
     delay(1500);
-    digitalWrite(OEpin, HIGH);
     
     std::cout << P << "Brightness OFF" << N << std::endl;
     if (wiringPiI2CWriteReg8(fd, GRPPWM_addr, 0x00))    // 0/255
         return -3;
-    digitalWrite(OEpin, LOW);
     delay(1500);
-    digitalWrite(OEpin, HIGH);
 
     return 0;
 }
@@ -50,7 +44,7 @@ int main (void)
 {
     wiringPiSetup();
     pinMode(OEpin, OUTPUT);
-    digitalWrite(OEpin, HIGH);      // set LEDs off by default
+    digitalWrite(OEpin, LOW);      // set LEDs on by default
     int i2c_address_doc = 0x15;     // I2C Address of PCA9624PW 
     int fd = wiringPiI2CSetup(i2c_address_doc);
     int ADC_address = detectADCDevice(i2c_address_doc);     // Just a confirmation for now, the function doesn't do that much job
@@ -70,14 +64,6 @@ int main (void)
         std::cout << R_B << "ERR : Problem while enabling LEDs" << N << std::endl;
         return EXIT_FAILURE;
     }
-    std::cout << G << "  [+]  All LEDs enabled !" << std::endl; delay(1000);
-    std::cout << P_B  << "-> Performing a test on LEDs in ..." << P << " 3 ... " << std::endl; delay(800);
-    std::cout << "... 2 ..." << std::endl; delay(800);
-    std::cout << "... 1 ..." << std::endl; delay(800);
-    std::cout << "Lighting all LEDs !" << std::endl;
-    digitalWrite(OEpin, LOW); delay(1500);
-    std::cout << "Turning all LEDs off" << N << std::endl;
-    digitalWrite(OEpin, HIGH); delay(1500);
 
     // Lastly, control all the LEDs' brightness at the same time as it will be done with the whole prototype
     std::cout << P_B  << "-> Controling global brightness" << N << std::endl;
@@ -89,8 +75,9 @@ int main (void)
     std::cout << G << "  [+]  Global brightness OK !" << std::endl; delay(1000);
 
     // Finish
-    std::cout << P_B << "-> All jobs done, exiting." << N << std::endl;
 
+    std::cout << P_B << "-> All jobs done, exiting." << N << std::endl;
+    digitalWrite(OEpin, HIGH);      // turn LEDs off
     return EXIT_SUCCESS;
 }
 

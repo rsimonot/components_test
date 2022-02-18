@@ -20,14 +20,14 @@ int main (void)
     std::cout << G << "  [+] Successfully read ID from ADC Device !" << N << std::endl;
     std::cout << P_B << "ID value -> " << P << id << N << std::endl;
 
-    wiringPiI2CWrite(fd, temp_register);
-    int r_value = wiringPiI2CRead(fd);
+    int r_value = wiringPiI2CReadReg8(fd, temp_register);
     if (r_value < 0) {
         std::cout << R_B << "ERR : Unable to read from ADC Device" << N << std::endl;
         return EXIT_FAILURE;
     }
+    double temp = r_value * 0.0078125;
     std::cout << G << "  [+] Successfully read Temperature from ADC Device !" << N << std::endl;
-    std::cout << P_B << "TEMP value -> " << P << r_value << N << std::endl;
+    std::cout << P_B << "TEMP value -> " << P << r_value << "  |  " << temp << N << std::endl;
 
     return EXIT_SUCCESS;
 }
