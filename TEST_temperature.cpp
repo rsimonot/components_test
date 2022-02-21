@@ -22,14 +22,9 @@ int main (void)
     std::cout << P_B << "ID value -> " << P << id << "  |  bits=>" << id_bits << N << std::endl;
 
     std::bitset<16>temp_bits(wiringPiI2CReadReg16(fd, temp_register));
-    double temp = static_cast<int>(temp_bits.to_ulong()) * 0.0078125;
-    if (temp < 0) {
-        std::cout << R_B << "ERR : Unable to read from ADC Device" << N << std::endl;
-        return EXIT_FAILURE;
-    }
+    float temp = static_cast<int16_t>(temp_bits.to_ulong() & 0xFFFF) * 0.0078125; 
     std::cout << G << "  [+] Successfully read Temperature from ADC Device !" << N << std::endl;
     std::cout << P_B << "TEMP value -> " << P << temp << "°C" << "  |  bits=>" << temp_bits << N << std::endl;
-
     return EXIT_SUCCESS;
 }
 
