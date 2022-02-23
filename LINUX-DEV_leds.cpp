@@ -10,31 +10,31 @@
 
 int setupGpio17()
 {
-    if ( access( "/sys/class/gpio/gpio17", F_OK ) != -1 ) {
-        std::cout << Y << "  [~]  GPIO 17 already initialized" << N << std::endl;
-        return 1;
-    }   
-
     int fd = open("/sys/class/gpio/export", O_WRONLY);
     if (fd == -1) {
         std::cout << R << "  [-]  Unable to open /sys/class/gpio/export" << N << std::endl;
         return -1;
     }
-    if (write(fd, "17", 2) != 2) {
+    if (write(fd, "17", 2) != 2 && access( "/sys/class/gpio/gpio17", F_OK ) == -1) {
         std::cout << R << "  [-]  Error writing to /sys/class/gpio/export" << N << std::endl;
         return -2;
     }
+    std::cout << G << "  [+]  Opened and wrote to /sys/class/gpio/export, or it's already done" << N << std::endl;
     close(fd);
+    sleep(1);   // Stupid but it needs this time to acknowledge that /sys/class/gpio/gpio17 exists
+                // Without any waiting time the actions bellow will fail
+
     // Set the pin to be an output by writing "out" to /sys/class/gpio/gpio17/direction
     fd = open("/sys/class/gpio/gpio17/direction", O_WRONLY);
     if (fd == -1) {
-        std::cout << Y << "  [?]  Unable to open /sys/class/gpio/gpio17/direction" << N << std::endl;
+        std::cout << R << "  [-]  Unable to open /sys/class/gpio/gpio17/direction" << N << std::endl;
         return -3;
     }
     if (write(fd, "out", 3) != 3) {
-        std::cout << Y << "  [?]  Error writing to /sys/class/gpio/gpio17/direction" << N << std::endl;
+        std::cout << R << "  [-]  Error writing to /sys/class/gpio/gpio17/direction" << N << std::endl;
         return -4;
     }
+    std::cout << G << "  [+]  Opened and wrote to /sys/class/gpio/gpio17/direction" << N << std::endl;
     close(fd);
     return 0;
 }
@@ -45,12 +45,13 @@ int setGpio17Low()
     int fd = open("/sys/class/gpio/gpio17/value", O_WRONLY);
     if (fd == -1) {
         std::cout << R << "  [-]  Unable to open /sys/class/gpio/gpio17/value" << N << std::endl;
+        return -1;
+    }
+    if (write(fd, "0", 1) != 1) {
+        std::cout << R << "  [-]  Error writing to /sys/class/gpio/gpio17/value" << N << std::endl;
         return -2;
     }
-    if (write(fd, "1", 1) != 1) {
-        std::cout << R << "  [-]  Error writing to /sys/class/gpio/gpio17/value" << N << std::endl;
-        return -3;
-    }
+    std::cout << G << "  [+]  Opened and wrote to /sys/class/gpio/gpio17/value" << N << std::endl;
     close(fd);
     return 0;
 }
@@ -67,6 +68,7 @@ int setGpio17High()
         std::cout << R << "  [-]  Error writing to /sys/class/gpio/gpio17/value" << N << std::endl;
         return -2;
     }
+    std::cout << G << "  [+]  Opened and wrote to /sys/class/gpio/gpio17/value" << N << std::endl;
     close(fd);
     return 0;
 }
@@ -83,6 +85,7 @@ int cleanupGpio17()
         std::cout << R << "  [-]  Error writing to /sys/class/gpio/unexport" << N << std::endl;
         return -2;
     }
+    std::cout << G << "  [+]  Opened and wrote to /sys/class/gpio/unexport" << N << std::endl;
     close(fd);
     return 0;
 }
@@ -110,7 +113,6 @@ int enableLEDs(int i2c_file, unsigned char buffer[], int length)
     buffer[6]  = 0x05; buffer[7]  = 0xb4;     // LED 4
     buffer[8]  = 0x06; buffer[9]  = 0xb4;     // LED 5
     buffer[10] = 0x07; buffer[11] = 0xb4;     // LED 6
-    std::cout << Y << "buffer filled" << N << std::endl;
     length = 12;
     if (write(i2c_file, buffer, length) != length) {
 		std::cout << R << "  [-]  Failed to write to the i2c bus" << N << std::endl;
