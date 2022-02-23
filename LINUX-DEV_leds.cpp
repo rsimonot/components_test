@@ -11,7 +11,7 @@
 int setupGpio17()
 {
     int fd = open("/sys/class/gpio/export", O_WRONLY);
-    if (fd == -1) {
+    if (-1 == fd) {
         std::cout << R << "  [-]  Unable to open /sys/class/gpio/export" << N << std::endl;
         return -1;
     }
@@ -26,7 +26,7 @@ int setupGpio17()
 
     // Set the pin to be an output by writing "out" to /sys/class/gpio/gpio17/direction
     fd = open("/sys/class/gpio/gpio17/direction", O_WRONLY);
-    if (fd == -1) {
+    if (-1 == fd) {
         std::cout << R << "  [-]  Unable to open /sys/class/gpio/gpio17/direction" << N << std::endl;
         return -3;
     }
@@ -43,7 +43,7 @@ int setGpio17Low()
 {
     // Open GPIO17 value
     int fd = open("/sys/class/gpio/gpio17/value", O_WRONLY);
-    if (fd == -1) {
+    if (-1 == fd) {
         std::cout << R << "  [-]  Unable to open /sys/class/gpio/gpio17/value" << N << std::endl;
         return -1;
     }
@@ -60,7 +60,7 @@ int setGpio17High()
 {
     // Set GPIO value to "high" ("1")
     int fd = open("/sys/class/gpio/gpio17/value", O_WRONLY);
-    if (fd == -1) {
+    if (-1 == fd) {
         std::cout << R << "  [-]  Unable to open /sys/class/gpio/gpio17/value" << N << std::endl;
         return -1;
     }
@@ -77,7 +77,7 @@ int cleanupGpio17()
 {
     // Unexport GPIO17
     int fd = open("/sys/class/gpio/unexport", O_WRONLY);
-    if (fd == -1) {
+    if (-1 == fd) {
         std::cout << R << "  [-]  Unable to open /sys/class/gpio/unexport" << N << std::endl;
         return -1;
     }
@@ -214,7 +214,7 @@ int main (void)
         return EXIT_FAILURE;
     }
     std::cout << P << "> Done" << N << std::endl;
-
+    /*
     // Lastly, control all the LEDs' brightness at the same time as it will be done with the whole prototype
     std::cout << P_B  << "-> Controling global brightness" << N << std::endl;
     if (GRPPWM_leds(i2c_file, buffer, length) < 0) {
@@ -222,7 +222,7 @@ int main (void)
         return EXIT_FAILURE;
     }
     std::cout << P << "> Done" << N << std::endl;
-
+    */
     // Finish
     std::cout << P_B << "-> All jobs done, exiting." << N << std::endl;
 
