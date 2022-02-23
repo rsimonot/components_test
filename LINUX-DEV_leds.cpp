@@ -10,13 +10,18 @@
 
 int setupGpio17()
 {
+    if ( access( "/sys/class/gpio/gpio17", F_OK ) != -1 ) {
+        std::cout << Y << "  [~]  GPIO 17 already initialized" << N << std::endl;
+        return 1;
+    }   
+
     int fd = open("/sys/class/gpio/export", O_WRONLY);
     if (fd == -1) {
-        std::cout << Y << "  [?]  Unable to open /sys/class/gpio/export" << N << std::endl;
+        std::cout << R << "  [-]  Unable to open /sys/class/gpio/export" << N << std::endl;
         return -1;
     }
     if (write(fd, "17", 2) != 2) {
-        std::cout << Y << "  [?]  Error writing to /sys/class/gpio/export" << N << std::endl;
+        std::cout << R << "  [-]  Error writing to /sys/class/gpio/export" << N << std::endl;
         return -2;
     }
     close(fd);
@@ -153,10 +158,11 @@ int main (void)
 {
     // Basic initialization for GPIO pin
     std::cout << P_B << "-> Initializing GPIO17" << N << std::endl;
-    if (setupGpio17() < 0)
-        std::cout << Y_B << "  WRN : Can't initialize GPIO pin, it can mean that it's done already" << N << std::endl;
-    else
-        std::cout << P << "> Done" << N << std::endl;
+    if (setupGpio17() < 0) { 
+        std::cout << R_B << "  ERR : Can't initialize GPIO pin" << N << std::endl;
+        return EXIT_FAILURE;
+    }
+    std::cout << P << "> Done" << N << std::endl;
     
     // Setting GPIO17 pin to HIGH
     std::cout << P_B << "-> Setting GPIO17 to LOW" << N << std::endl;
