@@ -1,6 +1,6 @@
 #include "ADC.hpp"  // ADC functions, iostream, wiringPi.h, wiringPiI2C.h, bitset, colorfullcpp
 
-#define OEpin 0    // OE pin, all LEDs at the same time, is on GPIO17, pin#50
+#define OEpin 11    // OE pin, all LEDs at the same time, is on GPIO17, pin#50
 
 int enableLEDs(int fd)
 {
@@ -64,6 +64,7 @@ int main (void)
         std::cout << R_B << "ERR : Problem while enabling LEDs" << N << std::endl;
         return EXIT_FAILURE;
     }
+    delay(3000);
 
     // Lastly, control all the LEDs' brightness at the same time as it will be done with the whole prototype
     std::cout << P_B  << "-> Controling global brightness" << N << std::endl;
