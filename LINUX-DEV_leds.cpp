@@ -99,6 +99,13 @@ int initializeLedModule(int i2c_file, unsigned char buffer[], int length)
     }
     std::cout << G << "  [+]  Successfully written to the i2c bus" << N << std::endl;
 
+    buffer[0] = 0x01; buffer[1] = 0x00;     // MODE2 to 0x00
+    if (write(i2c_file, buffer, length) != length) {
+		std::cout << R << "  [-]  Failed to write to the i2c bus" << N << std::endl;
+        return -1;
+    }
+    std::cout << G << "  [+]  Successfully written to the i2c bus" << N << std::endl;
+
     buffer[0] = 0x0c; buffer[1] = 0xff;     // LEDOUT0 to 0xff
     if (write(i2c_file, buffer, length) != length) {
 		std::cout << R << "  [-]  Failed to write to the i2c bus" << N << std::endl;
@@ -116,44 +123,44 @@ int initializeLedModule(int i2c_file, unsigned char buffer[], int length)
     return 0;
 }
 
-int enableLEDs(int i2c_file, unsigned char buffer[], int length)
+int controlLEDs(int i2c_file, unsigned char buffer[], int length, int val)
 {
-    buffer[0]  = 0x02; buffer[1]  = 0x50;     // LED 1
+    buffer[0]  = 0x02; buffer[1]  = val;     // LED 1
     if (write(i2c_file, buffer, length) != length) {
 		std::cout << R << "  [-]  Failed to write to the i2c bus" << N << std::endl;
         return -1;
     }
-    std::cout << G << "  [+]  Successfully written to the i2c bus" << N << std::endl; sleep(2);
+    std::cout << G << "  [+]  Successfully written to the i2c bus" << N << std::endl; sleep(1.2);
 
-    buffer[0] = 0x03; buffer[1] = 0x50;     // LED 2
+    buffer[0] = 0x03; buffer[1] = val;     // LED 2
     if (write(i2c_file, buffer, length) != length) {
 		std::cout << R << "  [-]  Failed to write to the i2c bus" << N << std::endl;
         return -1;
     }
-    std::cout << G << "  [+]  Successfully written to the i2c bus" << N << std::endl; sleep(2);
+    std::cout << G << "  [+]  Successfully written to the i2c bus" << N << std::endl; sleep(1.2);
 
-    buffer[0] = 0x04; buffer[1] = 0x50;     // LED 3
+    buffer[0] = 0x04; buffer[1] = val;     // LED 3
     if (write(i2c_file, buffer, length) != length) {
 		std::cout << R << "  [-]  Failed to write to the i2c bus" << N << std::endl;
         return -1;
     }
-    std::cout << G << "  [+]  Successfully written to the i2c bus" << N << std::endl; sleep(2);
+    std::cout << G << "  [+]  Successfully written to the i2c bus" << N << std::endl; sleep(1.2);
 
-    buffer[0] = 0x05; buffer[1] = 0x50;     // LED 4
+    buffer[0] = 0x05; buffer[1] = val;     // LED 4
     if (write(i2c_file, buffer, length) != length) {
 		std::cout << R << "  [-]  Failed to write to the i2c bus" << N << std::endl;
         return -1;
     }
-    std::cout << G << "  [+]  Successfully written to the i2c bus" << N << std::endl; sleep(2);
+    std::cout << G << "  [+]  Successfully written to the i2c bus" << N << std::endl; sleep(1.2);
 
-    buffer[0] = 0x06; buffer[1] = 0x50;     // LED 5
+    buffer[0] = 0x06; buffer[1] = val;     // LED 5
     if (write(i2c_file, buffer, length) != length) {
 		std::cout << R << "  [-]  Failed to write to the i2c bus" << N << std::endl;
         return -1;
     }
-    std::cout << G << "  [+]  Successfully written to the i2c bus" << N << std::endl; sleep(2);
+    std::cout << G << "  [+]  Successfully written to the i2c bus" << N << std::endl; sleep(1.2);
 
-    buffer[0] = 0x07; buffer[1] = 0x50;     // LED 6
+    buffer[0] = 0x07; buffer[1] = val;     // LED 6
     if (write(i2c_file, buffer, length) != length) {
 		std::cout << R << "  [-]  Failed to write to the i2c bus" << N << std::endl;
         return -1;
@@ -185,6 +192,27 @@ int GRPPWM_leds(int i2c_file, unsigned char buffer[], int length)
     
     std::cout << P << "Brightness OFF" << N << std::endl;
     buffer[0] = 0x0a; buffer[1] = 0x00;     // 0/255
+    if (write(i2c_file, buffer, length) != length) {
+		std::cout << R << "  [-]  Failed to write to the i2c bus" << N << std::endl;
+        return -3;
+    }
+    std::cout << G << "  [+]  Successfully written to the i2c bus" << N << std::endl;
+
+    return 0;
+}
+
+int manageLed7(int i2c_file, unsigned char buffer[], int length)
+{
+    std::cout << P << "LED7 OFF..." << N << std::endl; sleep(1);
+    buffer[0] = 0x08; buffer[1] = 0x00;     // 0/255
+    if (write(i2c_file, buffer, length) != length) {
+		std::cout << R << "  [-]  Failed to write to the i2c bus" << N << std::endl;
+        return -3;
+    }
+    std::cout << G << "  [+]  Successfully written to the i2c bus" << N << std::endl; sleep(3);
+
+    std::cout << P << "LED7 ON..." << N << std::endl; sleep(1);
+    buffer[0] = 0x08; buffer[1] = 0xff;     // 255/255
     if (write(i2c_file, buffer, length) != length) {
 		std::cout << R << "  [-]  Failed to write to the i2c bus" << N << std::endl;
         return -3;
@@ -247,13 +275,20 @@ int main (void)
     std::cout << P << "> Done" << N << std::endl; sleep(3);
     
     // Now controling the LEDs one by one
-    std::cout << P_B << "-> Enabling LEDs ..." << N << std::endl;
-    if (enableLEDs(i2c_file, buffer, length) < 0) {
+    std::cout << P_B << "-> Controling LEDs ..." << N << std::endl;
+    if (controlLEDs(i2c_file, buffer, length, 0x50) < 0) {
         std::cout << R_B << "  ERR : Problem while enabling LEDs" << N << std::endl;
         return EXIT_FAILURE;
     }
     std::cout << P << "> Done" << N << std::endl; sleep(3);
 
+    std::cout << P_B  << "-> Controling LED7 only" << N << std::endl;
+    if (manageLed7(i2c_file, buffer, length) < 0) {
+        std::cout << R_B << "  ERR : Unable to manage LED7" << N << std::endl;
+        return EXIT_FAILURE;
+    }
+    std::cout << P << "> Done" << N << std::endl; sleep(3);
+    /*
     // Lastly, control all the LEDs' brightness at the same time as it will be done with the whole prototype
     std::cout << P_B  << "-> Controling global brightness" << N << std::endl;
     if (GRPPWM_leds(i2c_file, buffer, length) < 0) {
@@ -261,6 +296,14 @@ int main (void)
         return EXIT_FAILURE;
     }
     std::cout << P << "> Done" << N << std::endl;
+    */
+
+    std::cout << P_B << "-> Controling LEDs ..." << N << std::endl;
+    if (controlLEDs(i2c_file, buffer, length, 0x00) < 0) {
+        std::cout << R_B << "  ERR : Problem while enabling LEDs" << N << std::endl;
+        return EXIT_FAILURE;
+    }
+    std::cout << P << "> Done" << N << std::endl; sleep(2);
 
     // Finish
     std::cout << P_B << "-> All jobs done, exiting." << N << std::endl;
